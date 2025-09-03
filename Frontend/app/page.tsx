@@ -21,9 +21,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-screen h-screen bg-black flex items-center justify-center">
-      <div className="glass-card p-10 w-96 flex flex-col items-center justify-center">
-        <h2 className="text-white text-2xl font-bold mb-8 text-center">
+    <div className="w-screen h-screen bg-base-300 flex items-center justify-center">
+      <div className="glass-card bg-base-100 rounded-2xl p-10 w-96 flex flex-col items-center justify-center shadow-md shadow-current">
+        <h2 className="text-primary text-2xl font-bold mb-8 text-center">
           Login to Chyrp Lite
         </h2>
         <form className="flex flex-col gap-6 w-full" onSubmit={handleSubmit}>
@@ -34,7 +34,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-3 bg-transparent border-b-2 border-gray-500 text-white outline-none"
+              className="w-full p-3 bg-base-100 border-b-4 border-base-200 text-primary outline-none"
             />
         
           </div>
@@ -45,16 +45,16 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-3 bg-transparent border-b-2 border-gray-500 text-white outline-none"
+              className="w-full p-3 bg-base-100 border-b-4 border-base-200 text-primary outline-none"
             />
             
           </div>
           {error && <p className="text-red-400 text-sm">{error}</p>}
-          <button className="bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 transition transform hover:scale-105">
+          <button className="bg-base-200 btn border-base-300 shadow-current shadow-sm text-secondary font-bold py-3 rounded-lg hover:bg-base-200 transition transform hover:scale-105">
             SIGN IN
           </button>
         </form>
-        <p className="text-gray-400 mt-4 hover:text-white cursor-pointer">
+        <p className="text-primary mt-4 hover:text-yellow-50 cursor-pointer">
           Forgot password?
         </p>
       </div>
