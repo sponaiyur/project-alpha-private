@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name:"",
     email:"",
+    username:"",
     password:"",
     confirmPassword:""
   })
@@ -40,6 +41,11 @@ export default function RegisterPage() {
       return false;
     }
     
+    if (!formData.username.trim()) {
+      setError("Username is required");
+      return false;
+    }
+
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters long");
       return false;
@@ -62,11 +68,12 @@ export default function RegisterPage() {
     setError("")
 
     try {
-      const res = await auth.register(formData.name,formData.email,formData.password);
+      console.log("payload:",formData)
+      const res = await auth.register(formData.name,formData.email, formData.username, formData.password);
       setSuccess("Account created successfully! Redirecting to login...")
 
       setTimeout(() => {
-        router.push("/");
+        router.push("/login");
       }, 2000);
       
     } catch(err) {
@@ -104,8 +111,21 @@ export default function RegisterPage() {
               onChange={handleInputChange}
               required
               className="w-full p-3 bg-transparent border-b-2 border-gray-500 text-white outline-none"
-            />  
-          </div>
+              />  
+            </div>
+
+            <div>
+              <input
+                  type="text"
+                  name="username"
+                  placeholder="USERNAME"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  required
+                  disabled={loading}
+                  className="w-full p-3 bg-transparent border-b-2 border-gray-500 text-white outline-none"
+                />
+            </div>
 
             <div className="relative">
               <input
@@ -149,7 +169,7 @@ export default function RegisterPage() {
             </button>
           </form>
           <p className="text-gray-400 mt-4 hover:text-white cursor-pointer">
-            <Link href="/">
+            <Link href="/login">
             Already a Chyrp user? Login Here!
             </Link>
           </p>

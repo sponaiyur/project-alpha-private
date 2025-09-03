@@ -7,9 +7,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  //headers: {
+  //  'Content-Type': 'application/json',
+ // },
 });
 
 // Request interceptor to add auth token
@@ -59,7 +59,7 @@ api.interceptors.response.use(
           console.error('Server error');
           break;
         default:
-          console.error(`Error ${status}: ${message}`);
+          console.error(`Error ${status}: `,JSON.stringify(message, null, 2));
       }
       
       // Fallback-1: Custom Error object
@@ -87,8 +87,8 @@ export const auth = {
     return response.data;
   },
   
-  register: async (name, email, password) => {
-    const response = await api.post('/api/auth/register', { name, email, password });
+  register: async (name, email, username, password) => {
+    const response = await api.post('/api/auth/register', { name, email, username, password });
     return response.data;
   },
   
@@ -119,6 +119,14 @@ export const dashboard = {
     return response.data;
   }
 };
+
+//Write API Methods
+export const write = {
+  post: (data, config) => api.post('/api/posts', data, config),
+  getPosts: () => api.get('/api/posts'),
+  updatePost: (id, data) => api.put(`/api/posts/${id}`, data),
+  deletePost: (id) => api.delete(`/api/posts/${id}`)
+}
 
 // Generic API methods
 export const apiMethods = {

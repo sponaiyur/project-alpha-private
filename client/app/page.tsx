@@ -1,119 +1,83 @@
-// app/page.tsx
-"use client"; // required for client-side interactivity (useState, router)
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+// src/pages/Landing.jsx
+"use client";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import {auth} from "../src/utils/api";
 
-export default function LoginPage() {
-  const router = useRouter();
-  const [formData,setFormData] = useState({
-    email:"",
-    password:""
-  })
-  const [error, setError] = useState("");
-  const [loading,setLoading] = useState(false)
+const Landing = () => {
+  const [show, setShow] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {name,value}=e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name] : value
-    }))
-    if (error) setError("") //clear out any errors if the user starts to type
-  }
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true); //starts the loading animation, until login ends
-    setError("");
-    
-    try {
-      const res = await auth.login(formData.email, formData.password);
-
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("user", JSON.stringify(res.user))
-
-      router.push("/dashboard");
-    } catch(err: unknown) {
-      console.error("Login error:", err);
-      
-      if (err instanceof Error && 'status' in err) {
-        const statusError = err as Error & {status: number}
-
-        if(statusError.status === 401) {
-          setError("Invalid Email or password")
-        }
-        if(statusError.status === 0) {
-          setError("Network error. Please check your connection.")
-        }
-        else {
-          setError("Something went wrong. Please try again")
-        }
-      }
-    } finally {
-      setLoading(false) //after everything is handled, finish the loading animation
-    }
-  };
-
+  useEffect(() => {
+    setTimeout(() => setShow(true), 500); // small delay before animation starts
+  }, []);
 
   return (
-    <div className="w-screen h-screen bg-black flex items-center justify-center">
-      <div className="glass-card p-10 w-96 flex flex-col items-center justify-center">
-        <h2 className="text-white text-2xl font-bold mb-8 text-center">
-          Login to Chyrp Lite
-        </h2>
-        <form className="flex flex-col gap-6 w-full" onSubmit={handleLogin}>
-          <div className="relative">
-            <input
-              name="email"
-              type="email"
-              placeholder="EMAIL"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              disabled={loading}
-              className="w-full p-3 bg-transparent border-b-2 border-gray-500 text-white outline-none"
-            />
-          </div>
+    <div className="h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900 overflow-hidden relative">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 50 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="text-center"
+      >
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 1 }}
+          className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg"
+        >
+          Welcome to <span className="text-purple-400">Chyrp Lite</span> - Remastered
+        </motion.h1>
 
-          <div className="relative">
-            <input
-              name="password"
-              type="password"
-              placeholder="PASSWORD"
-              value={formData.password}
-              onChange={handleInputChange}
-              required
-              //disabled={loading}
-              className="w-full p-3 bg-transparent border-b-2 border-gray-500 text-white outline-none"
-            />
-          </div>
+        {show && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2, duration: 1.2 }}
+            className="mt-6 text-lg md:text-2xl text-gray-200"
+          >
+            A modern frontend for a timeless CMS ✨
+          </motion.p>
+        )}
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-
-          <button 
-            type="submit"
-            disabled={loading}
-            className="bg-white text-black font-bold py-3 rounded-lg hover:bg-gray-200 cursor-pointer transition transform hover:scale-105">
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-2"></div>
-                Signing in...
-              </div>
-            ) : (
-              "Sign In"
-            )}
-          </button>
-        </form>
-
-        <p className="text-gray-400 mt-4 hover:text-white cursor-pointer">
-          <Link href="/register">
-          New to Chyrp? Register Here!
+        {/* Buttons */}
+        <motion.div
+          className="mt-10 flex gap-6 justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.8, duration: 1 }}
+        >
+          <Link href="/login">
+            <button className="px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl shadow-lg hover:bg-purple-700 transition-transform transform hover:scale-105">
+              Login
+            </button>
           </Link>
-        </p>
+          <Link href="/register">
+            <button className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105">
+              Register
+            </button>
+          </Link>
+        </motion.div>
+      </motion.div>
+
+      {/* Floating particles for vibe */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="w-2 h-2 bg-white rounded-full opacity-30"
+            initial={{ y: "100vh", x: Math.random() * window.innerWidth }}
+            animate={{ y: -20 }}
+            transition={{
+              duration: 8 + Math.random() * 5,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+            }}
+            style={{ left: `${Math.random() * 100}%` }}
+          />
+        ))}
       </div>
     </div>
   );
-}
+};
+
+export default Landing;
