@@ -32,12 +32,13 @@ class UserRegister(BaseModel):
     password: str
 
 class UserLogin(BaseModel):
-    email: EmailStr
+    username: str
     password: str
 
 class UserResponse(BaseModel):
     name: str
     email: str
+    username: str
 
 class TokenResponse(BaseModel):
     token: str
@@ -75,9 +76,10 @@ def verify_password(password: str, hashed) -> bool:
         logger.error(f"Password verification error: {e}, hash type: {type(hashed)}")
         return False
 
-def create_jwt_token(email: str) -> str:
+def create_jwt_token(username: str, email: str) -> str:
     """Create JWT token"""
     payload = {
+        "username": username,
         "email": email,
         "exp": datetime.utcnow() + timedelta(hours=JWT_EXPIRATION_HOURS),
         "iat": datetime.utcnow()
@@ -161,35 +163,32 @@ async def login(user_credentials: UserLogin):
             async with conn.cursor(aiomysql.DictCursor) as cur:
                 # Get user from database
                 await cur.execute(
-                    "SELECT name, email, password FROM users WHERE email = %s",
-                    (user_credentials.email,)
+                    "SELECT name, username, password, email FROM users WHERE username = %s",
+                    (user_credentials.username,)
                 )
                 user = await cur.fetchone()
                 
                 if not user:
                     raise HTTPException(
                         status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Invalid email or password"
+                        detail="Invalid username or password"
                     )
                 
                 # Verify password
                 if not verify_password(user_credentials.password, user['password']):
                     raise HTTPException(
                         status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Invalid email or password"
+                        detail="Invalid username or password"
                     )
                 
                 # Create token
-                token = create_jwt_token(user['email'])
+                token = create_jwt_token(user['username'],user['email'])
                 
-                logger.info(f"User logged in successfully: {user['email']}")
-                logger.info(TokenResponse(
-                    token=token,
-                    user=UserResponse(name=user['name'], email=user['email'])
-                ))
+                logger.info(f"User logged in successfully: {user['username']},{user['email']}")
+
                 return TokenResponse(
                     token=token,
-                    user=UserResponse(name=user['name'], email=user['email'])
+                    user=UserResponse(name=user['name'], email=user['email'],username=user['username'])
                 )
                 
     except HTTPException:

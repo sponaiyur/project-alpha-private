@@ -9,7 +9,7 @@ import {auth} from "../../src/utils/api";
 export default function LoginPage() {
   const router = useRouter();
   const [formData,setFormData] = useState({
-    email:"",
+    username:"",
     password:""
   })
   const [error, setError] = useState("");
@@ -30,7 +30,7 @@ export default function LoginPage() {
     setError("");
     
     try {
-      const res = await auth.login(formData.email, formData.password);
+      const res = await auth.login(formData.username, formData.password);
 
       localStorage.setItem("token", res.token);
       localStorage.setItem("user", JSON.stringify(res.user))
@@ -67,10 +67,10 @@ export default function LoginPage() {
         <form className="flex flex-col gap-6 w-full" onSubmit={handleLogin}>
           <div className="relative">
             <input
-              name="email"
-              type="email"
-              placeholder="EMAIL"
-              value={formData.email}
+              name="username"
+              type="text"
+              placeholder="USERNAME"
+              value={formData.username}
               onChange={handleInputChange}
               required
               disabled={loading}

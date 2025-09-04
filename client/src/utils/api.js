@@ -7,9 +7,6 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
-  //headers: {
-  //  'Content-Type': 'application/json',
- // },
 });
 
 // Request interceptor to add auth token
@@ -82,8 +79,8 @@ api.interceptors.response.use(
 
 // Auth API methods
 export const auth = {
-  login: async (email, password) => {
-    const response = await api.post('/api/auth/login', { email, password });
+  login: async (username, password) => {
+    const response = await api.post('/api/auth/login', { username, password });
     return response.data;
   },
   
